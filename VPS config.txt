@@ -1,0 +1,104 @@
+ssh root@<remote>
+adduser marcel
+usermod -aG sudo marcel
+login marcel
+
+sudo passwd -l root
+
+sudo nano /etc/ssh/sshd_config
+PermitRootLogin no
+
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+sudo nano /etc/fstab
+/swapfile none swap sw 0 0
+
+sudo add-apt-repository ppa:ondrej/php && sudo apt update && sudo apt upgrade
+
+sudo apt install apache2 ghostscript libmagickcore-6.q16-7-extra libapache2-mod-php8.4 mysql-server php8.4 php8.4-opcache php8.4-pdo php8.4-xml php8.4-apcu php8.4-bcmath php8.4-calendar php8.4-ctype php8.4-curl php8.4-dom php8.4-exif php8.4-ffi php8.4-fileinfo php8.4-ftp php8.4-gd php8.4-gettext php8.4-gmp php8.4-iconv php8.4-igbinary php8.4-imagick php8.4-intl php8.4-mbstring php8.4-memcache php8.4-mysqli php8.4-mysql php8.4-pdo php8.4-phar php8.4-posix php8.4-readline php8.4-shmop php8.4-simplexml php8.4-sockets php8.4-sysvmsg php8.4-sysvsem php8.4-sysvshm php8.4-tokenizer php8.4-xmlreader php8.4-xmlwriter php8.4-xsl php8.4-zip php8.4-redis
+
+sudo nano /etc/apache2/apache2.conf
+
+sudo mkdir -p /srv/www/nextcloud/
+sudo chown www-data /srv/www
+sudo chown www-data: /srv/www/nextcloud
+cd /srv/www/nextcloud/ && sudo -u www-data curl https://download.nextcloud.com/server/installer/setup-nextcloud.php -O -L
+
+sudo nano /etc/apache2/sites-available/000-stage-cloud.conf
+
+nano /etc/hosts/
+127.0.0.1 localhost stage-marcel.marcel-solutions.de
+
+<VirtualHost *:80>
+    ServerName cloud.marcel-solutions.de
+    DocumentRoot /srv/www/nextcloud
+    <Directory /srv/www/nextcloud>
+        Options FollowSymLinks
+        AllowOverride Limit Options FileInfo
+        DirectoryIndex index.php
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+cd /etc/apache2/sites-available/
+sudo a2ensite 000-stage-cloud
+sudo a2enmod rewrite
+sudo a2enmod headers
+sudo a2enmod imagick
+sudo a2dissite 000-default
+service apache2 reload
+
+sudo mysql -u root
+CREATE DATABASE nextcloud_dba;
+CREATE USER 'nextcloud_dbu'@'localhost' IDENTIFIED BY '<Passwort>';
+GRANT ALL PRIVILEGES ON nextcloud_dba.* TO 'nextcloud_dbu'@localhost;
+FLUSH PRIVILEGES;
+quit
+
+#Nextcloud installieren
+sudo nano /srv/www/nextcloud/.htaccess
+
+#<IfModule mod_dir.c>
+#    DirectoryIndex index.php index.html
+#</IfModule>
+
+sudo apt install python3 python3-dev python3-venv libaugeas-dev gcc
+sudo python3 -m venv /opt/certbot/
+sudo /opt/certbot/bin/pip install --upgrade pip
+sudo /opt/certbot/bin/pip install certbot certbot-apache
+sudo ln -s /opt/certbot/bin/certbot /usr/local/bin/certbot
+sudo certbot --apache
+echo "0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && sudo certbot renew -q" | sudo tee -a /etc/crontab > /dev/null
+/opt/certbot/bin/pip install --upgrade certbot certbot-apache
+
+sudo nano /etc/php/8.4/apache2/php.ini
+memory_limit = 1024M
+upload_max_filesize = 500M
+post_max_size = 500M
+max_input_time = 60
+max_execution_time = 360
+opcache.enable_cli
+opcache.enable_cli=1
+opcache.memory_consumption=1024
+opcache.interned_strings_buffer=64
+opcache.max_accelerated_files=10000
+opcache.revalidate_freq=1
+opcache.save_comments=1
+
+
+sudo nano /srv/www/nextcloud/config/config.php
+'maintenance_window_start' => '5',
+'default_phone_region' => 'DE',
+'serverid' => 1,
+'memcache.local’ => ‘\OC\Memcache\APCu',
+'memcache.locking’ => ‘\OC\Memcache\Redis',
+
+sudo php /srv/www/nextcloud/occ maintenance:repair --include-expensive
+sudo php /srv/www/nextcloud/occ db:add-missing-indices
+
+sudo nano /etc/apache2/sites-available/000-stage-cloud-le-ssl.conf
+Header always set Strict-Transport-Security "max-age=15852000; includeSubDomains"
+
