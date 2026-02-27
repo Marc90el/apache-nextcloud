@@ -1,0 +1,7 @@
+sudo apt update && sudo apt upgrade
+sudo apt install coturn
+sudo nano /etc/default/coturn
+TURNSERVER_ENABLED=1
+sudo nano /etc/turnserver.conf
+chmod 644 /etc/letsencrypt/live/server.marcel-solutions.de/privkey.pem
+service coturn restart
