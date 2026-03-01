@@ -1,0 +1,4 @@
+# Backup erstellen
+mysqldump --single-transaction --default-character-set=utf8mb4 --no-tablespaces --user='nextcloud_dbu' --password='password' 'nextcloud_dba' > nextcloud-sqlbkp_`date +"%Y%m%d"`.bak
+
+
