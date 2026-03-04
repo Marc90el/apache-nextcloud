@@ -47,30 +47,35 @@ sudo nano /etc/apache2/sites-available/000-stage-cloud.conf
         DirectoryIndex index.php
         Require all granted
     </Directory>
+    #ErrorLog ${APACHE_LOG_DIR}/error.log
+    #CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
 
+
 sudo nano /etc/hosts
-127.0.0.1 localhost stage-cloud.marcel.marcel-solutions.de
+127.0.0.1 localhost stage-cloud.marcel-solutions.de
 exit
 
 sudo a2ensite 000-stage-cloud
 sudo a2enmod rewrite
 sudo a2enmod headers
+
 sudo a2dissite 000-default
 service apache2 reload
 
 ## Mysql
 sudo nano /etc/mysql/my.cnf
 [client]
-default-character-set = utf8mb4
+#default-character-set = utf8mb4
 [mysqld]
 character_set_server = utf8mb4
 collation_server = utf8mb4_general_ci
-#transaction_isolation = READ-COMMITTED
+transaction_isolation = READ-COMMITTED
 
 
-sudo mysql -u root
+sudo mariadb -u root
 CREATE DATABASE nextcloud_dba;
+ALTER DATABASE nextcloud_dba CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 CREATE USER 'nextcloud_dbu'@'localhost' IDENTIFIED BY '<Passwort>';
 GRANT ALL PRIVILEGES ON nextcloud_dba.* TO 'nextcloud_dbu'@localhost;
 FLUSH PRIVILEGES;
@@ -93,6 +98,10 @@ sudo ln -s /opt/certbot/bin/certbot /usr/local/bin/certbot
 sudo certbot --apache
 echo "0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && sudo certbot renew -q" | sudo tee -a /etc/crontab > /dev/null
 /opt/certbot/bin/pip install --upgrade certbot certbot-apache
+
+STTS hinzufügen
+sudo nano /etc/apache2/sites-available/000-stage-cloud-le-ssl.conf
+Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
 
 ## Für Client Push benötigt
 sudo apt install redis-server
@@ -121,6 +130,7 @@ sudo nano /etc/php/8.4/fpm/php.ini
 sys_temp_dir = "/tmp"
 memory_limit = 2048M
 upload_max_filesize = 1024M
+output_buffering = Off
 post_max_size = 1024M
 max_input_time = 60
 max_execution_time = 360
@@ -133,6 +143,8 @@ opcache.interned_strings_buffer=64
 opcache.max_accelerated_files=10000
 opcache.revalidate_freq=1
 opcache.save_comments=1
+
+sudo nano /etc/php/8.4/cli/conf.d/20-apcu.ini
 
 service apache2 reload
 
@@ -151,13 +163,31 @@ sudo nano /srv/www/nextcloud/config/config.php
   'host' => 'localhost',
   'port' => 6379,
   ],
+'mail_smtppassword' => '<Password>',
+'mail_smtpname' => 'notification@cloud.marcel-solutions.de',
+'mail_domain' => 'cloud.marcel-solutions.de',
+'mail_from_address' => 'notification',
+'mail_smtpmode' => 'smtp',
+'mail_smtpsecure' => 'ssl',
+'mail_smtphost' => 'smtp.ionos.de',
+'mail_smtpauth' => true,
+'mail_smtpport' => '465',
+'mail_sendmailmode' => 'smtp',
+'mail_smtpstreamoptions' =>
+  array (
+    'ssl' =>
+    array (
+      'allow_self_signed' => false,
+      'verify_peer' => true,
+      'verify_peer_name' => true,
+    ),
+  ),
+
 
 ## Datenbank reparieren
 sudo php /srv/www/nextcloud/occ maintenance:repair --include-expensive
 sudo php /srv/www/nextcloud/occ db:add-missing-indices
 
-STTS hinzufügen
-sudo nano /etc/apache2/sites-available/000-stage-cloud-le-ssl.conf
-Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+
 
 
