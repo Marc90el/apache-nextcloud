@@ -13,16 +13,12 @@ sudo rsync -Aavx /home/data/ /home/marcel/Nextcloud-backup/data/data_`date +"%Y%
 sudo chown -R marcel /home/marcel/Nextcloud-backup/data/data_`date +"%Y%m%d"`.bak/
 
 ## Backup nach Extern kopieren
-
-mkdir -p /home/marcel/Dokumente/Nextcloud-backup/
 sudo scp -r marcel@87.106.166.194:/home/marcel/Nextcloud-backup/ /home/marcel/Dokumente/Nextcloud-backup_`date +"%Y%m%d"`.bak/
 
 ## Backup zurück kopieren
-# Remote
-mkdir -p /home/marcel/Nextcloud-stage/
-# Lokal
-sudo scp -r /home/marcel/Dokumente/Nextcloud-backup_`date +"%Y%m%d"`.bak/ marcel@87.106.166.194:/home/marcel/Nextcloud-stage/Nextcloud-backup_`date +"%Y%m%d"`.bak/
+sudo scp -r /home/marcel/Dokumente/Nextcloud-backup_`date +"%Y%m%d"`.bak/ marcel@87.106.166.194:/home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/
 
+sudo chown -R www-data /home/marcel/Nextcloud-backup/data/data_`date +"%Y%m%d"`.bak/
 
 ## Backup wiederherstellen
 sudo mariadb -h localhost -u nextcloud_dbu -p'Password' nextcloud_dba < /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/dbdumps/nextcloud-sqlbkp_`date +"%Y%m%d"`.bak/
