@@ -1,5 +1,25 @@
 # Backup erstellen
-mariadb-dump --single-transaction --default-character-set=utf8mb4 --no-tablespaces --user='nextcloud_dbu' --password='<password>' 'nextcloud_dba' > nextcloud-sqlbkp_`date +"%Y%m%d"`.bak
+
+# Mariadb Backup
+mkdir -p /home/marcel/Nextcloud/dbdumps
+mariadb-dump --single-transaction --default-character-set=utf8mb4 --no-tablespaces --user='nextcloud_dbu' --password='<password>' 'nextcloud_dba' > /home/marcel/Nextcloud/dbdumps/nextcloud-sqlbkp_`date +"%Y%m%d"`.bak
+
+Daten Backup
+mkdir -p /home/marcel/Nextcloud/nextcloud/nextcloud_`date +"%Y%m%d"`.bak/
+sudo rsync -Aavx /srv/www/nextcloud/ /home/marcel/Nextcloud/nextcloud/nextcloud_`date +"%Y%m%d"`.bak/
+mkdir -p /home/marcel/Nextcloud/data/data_`date +"%Y%m%d"`.bak/
+sudo rsync -Aavx /home/data/ /home/marcel/Nextcloud/data/data_`date +"%Y%m%d"`.bak/
+
+
+
+mkdir -p /home/marcel/Dokumente/Nextcloud/backup_`date +"%Y%m%d"`.bak/
+
+rsync -Aavx marcel@87.106.166.194:/home/marcel/Nextcloud/ /home/marcel/Nextcloud/backup_`date +"%Y%m%d"`.bak/
+
+scp -r marcel@87.106.166.194:/home/marcel/Nextcloud/* /home/marcel/Dokumente/Nextcloud/backup_`date +"%Y%m%d"`.bak/
+
+
+
 
 ## Backup wiederherstellen
 sudo mariadb -h localhost -u nextcloud_dbu -p'Password' nextcloud_dba < nextcloud-sqlbkp_<Datum>.bak

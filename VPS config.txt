@@ -73,6 +73,7 @@ collation_server = utf8mb4_general_ci
 transaction_isolation = READ-COMMITTED
 
 
+sudo /usr/bin/mysql_secure_installation
 sudo mariadb -u root
 CREATE DATABASE nextcloud_dba;
 ALTER DATABASE nextcloud_dba CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
@@ -81,7 +82,7 @@ GRANT ALL PRIVILEGES ON nextcloud_dba.* TO 'nextcloud_dbu'@localhost;
 FLUSH PRIVILEGES;
 quit
 
-#Nextcloud installieren
+#Nextcloud installieren - nicht mehr benötigt
 sudo nano /srv/www/nextcloud/.htaccess
 
 #<IfModule mod_dir.c>
@@ -146,6 +147,7 @@ opcache.revalidate_freq=1
 opcache.save_comments=1
 
 sudo nano /etc/php/8.4/cli/conf.d/20-apcu.ini
+set apc.shm_size=1024M
 
 service apache2 reload
 
