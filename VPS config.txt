@@ -102,6 +102,7 @@ echo "0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; 
 STTS hinzufügen
 sudo nano /etc/apache2/sites-available/000-stage-cloud-le-ssl.conf
 Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+AllowOverride All
 
 ## Für Client Push benötigt
 sudo apt install redis-server
