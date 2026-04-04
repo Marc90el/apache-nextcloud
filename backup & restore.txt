@@ -6,26 +6,22 @@ mkdir -p /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/
 mariadb-dump --single-transaction --default-character-set=utf8mb4 --no-tablespaces --user='nextcloud_dbu' --password='<password>' 'nextcloud_dba' > /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/nextcloud-sqlbkp_`date +"%Y%m%d"`.bak
 
 # Daten Backup
-mkdir -p /home/marcel/Nextcloud-backup/nextcloud_`date +"%Y%m%d"`.bak/nextcloud
 sudo rsync -Aavx /srv/www/nextcloud/ /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/nextcloud/
-mkdir -p /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/data/
 sudo rsync -Aavx /home/data/ /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/data/
-
-sudo chown -R marcel /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/data/
 
 ## Backup packen
 sudo tar cfvz Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/
 
 ## Backup nach Extern kopieren
 
-scp -r marcel@87.106.166.194:/home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz /home/marcel/Dokumente/
+scp -r marcel@87.106.190.141:/home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz /home/marcel/Dokumente/
 
 
-## Backup zurück kopieren entpacken und rechte wiederherstellen
+## Backup zurück kopieren und entpacken
 mkdir /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/
 scp -r /home/marcel/Dokumente/Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz marcel@87.106.190.141:/home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/
+
 tar xfvz /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz -C /
-sudo chown -R www-data /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/data/
 
 ## Backup wiederherstellen
 sudo mariadb -h localhost -u nextcloud_dbu -p'Password' nextcloud_dba < /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/nextcloud-sqlbkp_`date +"%Y%m%d"`.bak
@@ -37,3 +33,8 @@ sudo rsync -Aavx /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/data/ /home/
 sudo chown -R www-data:www-data /srv/www/nextcloud/
 sudo chown -R www-data:www-data /home/data/
 sudo nano /srv/www/nextcloud/config/config.php
+
+occ maintenance:data-fingerprint
+
+
+
