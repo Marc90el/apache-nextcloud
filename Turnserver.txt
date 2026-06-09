@@ -2,6 +2,16 @@ sudo apt update && sudo apt upgrade
 sudo apt install coturn
 sudo nano /etc/default/coturn
 TURNSERVER_ENABLED=1
+
+openssl rand -hex 32
 sudo nano /etc/turnserver.conf
-chmod 644 /etc/letsencrypt/live/server.marcel-solutions.de/privkey.pem
+
+sudo groupadd certaccess 2>/dev/null
+sudo usermod -aG certaccess turnserver
+sudo chgrp -R certaccess /etc/letsencrypt/live /etc/letsencrypt/archive
+sudo chmod -R g=rX /etc/letsencrypt/live /etc/letsencrypt/archive
+
 service coturn restart
+sudo systemctl status coturn
+sudo journalctl -u coturn -n 30
+
