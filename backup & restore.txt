@@ -18,10 +18,9 @@ scp -r marcel@87.106.190.141:/home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak.
 
 
 ## Backup zurück kopieren und entpacken
-mkdir /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/
-scp -r /home/marcel/Dokumente/Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz marcel@87.106.190.141:/home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/
+scp -r /home/marcel/Dokumente/Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz marcel@87.106.190.141:/home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz
 
-tar xfvz /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz -C /
+tar xfvz /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz -C /
 
 ## Backup wiederherstellen
 sudo mariadb -h localhost -u nextcloud_dbu -p'Password' nextcloud_dba < /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/nextcloud-sqlbkp_`date +"%Y%m%d"`.bak
