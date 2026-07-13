@@ -10,7 +10,7 @@ sudo rsync -Aavx /srv/www/nextcloud/ /home/marcel/Nextcloud-backup_`date +"%Y%m%
 sudo rsync -Aavx /home/data/ /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/data/
 
 ## Backup packen
-sudo tar cfvz Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/
+sudo tar cfvz /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/
 
 ## Backup nach Extern kopieren
 

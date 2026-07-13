@@ -189,5 +189,8 @@ sudo php /srv/www/nextcloud/occ maintenance:repair --include-expensive
 sudo php /srv/www/nextcloud/occ db:add-missing-indices
 
 
+occ config:app:set richdocuments preview_generation --type boolean --lazy --value false
+
+
 
 
