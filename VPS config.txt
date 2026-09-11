@@ -23,6 +23,11 @@ sudo swapon /swapfile
 sudo nano /etc/fstab
 /swapfile none swap sw 0 0
 
+sudo ufw allow 22,80,443,8443,8447/tcp
+sudo ufw deny from 139.28.18.122
+sudo ufw enable
+
+
 ## Apache & Mariadb & PHP installieren
 (sudo add-apt-repository ppa:Sury /php) && sudo apt update && sudo apt upgrade
 
@@ -55,6 +60,13 @@ sudo nano /etc/apache2/sites-available/000-stage-cloud.conf
     </Directory>
     #ErrorLog ${APACHE_LOG_DIR}/error.log
     #CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{THE_REQUEST} "\$\(|%24%28|\|base64|%2e%2e/" [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
 </VirtualHost>
 
 
