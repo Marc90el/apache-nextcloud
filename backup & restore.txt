@@ -1,5 +1,5 @@
 ## Backup erstellen
-sudo nano /srv/www/nextcloud/config/config.php
+sudo -u www-data php /srv/www/nextcloud/occ maintenance:mode --on
 
 # Mariadb Backup
 mkdir -p /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/
@@ -8,6 +8,8 @@ mariadb-dump --single-transaction --default-character-set=utf8mb4 --no-tablespac
 # Daten Backup
 sudo rsync -Aavx /srv/www/nextcloud/ /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/nextcloud/
 sudo rsync -Aavx /home/data/ /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/data/
+
+sudo -u www-data php /srv/www/nextcloud/occ maintenance:mode --off
 
 ## Backup packen
 sudo tar cfvz /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak.tar.gz /home/marcel/Nextcloud-backup_`date +"%Y%m%d"`.bak/
